@@ -28,15 +28,15 @@ def make_operation(n1,n2,op):
 			case '|':
 				return int(str(n1)+str(n2))
 
-def find_possibilities(target, numbers, operations, step=1):
+def find_possibilities(target, numbers, step=1):
 	possible = False
 	operators = OPERATORS[step]
 	if len(numbers) == 1:
 		return numbers[0] == target
-	for op in operations:
+	for op in operators:
 		result = make_operation(numbers[0],numbers[1],op)
 		if result <= target:
-					possible = possible or find_possibilities(target, [result]+numbers[2:],operators)
+					possible = possible or find_possibilities(target, [result]+numbers[2:],step)
 	return possible
 					
 		
@@ -50,7 +50,7 @@ def process_data(data :str, step=1):
 		target, numbers = line.split(':')
 		target = int(target)
 		numbers = numbers.strip()
-		if find_possibilities(target, list(map(int, numbers.split(' '))), operators, step):
+		if find_possibilities(target, list(map(int, numbers.split(' '))), step):
 			result += target
 	return result
 
