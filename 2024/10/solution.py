@@ -14,7 +14,8 @@ example = """89010123
 def parse_data(data):
 	zeroes = []
 	maphills = []
-	for y, line in enumerate(data.split('\n')):
+	y = 0
+	for line in data.split('\n'):
 		if line:
 			numbers=[]
 			for x, number in enumerate(map(int, line)):
@@ -22,6 +23,7 @@ def parse_data(data):
 					zeroes.append((y, x))
 				numbers.append(number)
 			maphills.append(numbers)
+			y+=1
 	return zeroes, maphills
 
 def find_around_coords(x: int, y: int, width: int, height: int):
@@ -39,18 +41,29 @@ def find_around_coords(x: int, y: int, width: int, height: int):
 def find_size(maphills: List[List[int]]):
 	return len(maphills), len(maphills[0])
 
-def explore_map(maphills: List[List[int]], zeroes, width, height):
+def explore_map(maphills: List[List[int]], zeroes, width, height, step=1):
 	counter = 0
 	for coord in zeroes:
 		y, x = coord
-		number = find_next_value(maphills, x, y, width, height, 1)
+		number = find_next_value(maphills, x, y, width, height, 1, [], step)
 		counter += number
 	return counter
 
 
-def find_next_value(maphills: List[List[int]], x: int, y: int, width: int, height: int, val_to_search: int = 1) -> int:
+def find_next_value(maphills: List[List[int]], x: int, y: int, width: int, height: int, val_to_search: int = 1,
+                    reached=None, step=1) -> int:
+	step1 = step == 1
+	if reached is None:
+		reached = []
 	if val_to_search == 10:
-		return 1
+		if step1:
+			if (y, x) not in reached:
+				reached.append((y, x))
+				return 1
+			else:
+				return 0
+		else:
+			return 1
 	directions = [(0, 1), (1, 0), (-1, 0), (0, -1)]  # droite, bas, haut, gauche
 	counter = 0
 	for dx, dy in directions:
@@ -58,7 +71,7 @@ def find_next_value(maphills: List[List[int]], x: int, y: int, width: int, heigh
 
 		if (0 <= nx < width) and (0 <= ny < height):
 			if maphills[ny][nx] == val_to_search:
-				counter += find_next_value(maphills, nx, ny, width, height, val_to_search + 1)
+				counter += find_next_value(maphills, nx, ny, width, height, val_to_search + 1, reached, step)
 
 	return counter
 
@@ -71,4 +84,9 @@ class Day10(Solution):
 		width, height = find_size(maps)
 		return explore_map(maps, zeroes, width, height)
 
-Day10().run_solution(1, ProblemType.EXAMPLE)
+	def solve_part2(self, data):
+		zeroes, maps = parse_data(data)
+		width, height = find_size(maps)
+		return explore_map(maps, zeroes, width, height, 2)
+
+Day10().run_solution(2, ProblemType.REAL_DATA)
