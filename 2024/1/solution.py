@@ -38,7 +38,7 @@ def process_lists(l1,l2):
 def main_step1():
     file_data = read_file(INPUT_FILE)
     l1, l2 = parse_lists(file_data)
-    process_lists(l1,l2)
+    return process_lists(l1,l2)
     
 ## ---------------------------------
 ## Step 2
@@ -53,7 +53,6 @@ def create_dic_occurrences(l):
     return d
 
 def process_similarities(l1, dic):
-
     total = 0
     for i in l1:
         if dic.get(i):
@@ -67,5 +66,6 @@ def main_step2():
     total = process_similarities(l1, d)
     #print(total)
 
-exec_time = timeit.timeit(main_step2, number=3000)
-print(f"Execution time: {exec_time}")
+#exec_time = timeit.timeit(main_step2, number=3000)
+#print(f"Execution time: {exec_time}")
+print(main_step1())
